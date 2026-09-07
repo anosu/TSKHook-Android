@@ -9,6 +9,7 @@ public static class RuntimeController
     private const float EnforcementIntervalSeconds = 1.0f;
 
     private static bool _initialized;
+    private static bool _gameSpeedApplied;
     private static float _originalGameSpeed;
     private static int _originalTargetFrameRate;
     private static float _nextEnforcementTime;
@@ -26,13 +27,14 @@ public static class RuntimeController
         if (_initialized)
             return;
 
-        _originalGameSpeed = Time.timeScale;
         _originalTargetFrameRate = Application.targetFrameRate;
         _initialized = true;
         ApplySettings(logChanges: true);
         Toast.Info(
             "运行设置",
-            $"游戏速度 {GameSpeed:0.##}x，目标帧率 {TargetFrameRate}"
+            _gameSpeedApplied
+                ? $"游戏速度 {GameSpeed:0.##}x，目标帧率 {TargetFrameRate}"
+                : $"游戏速度修改已关闭，目标帧率 {TargetFrameRate}"
         );
     }
 
@@ -50,7 +52,7 @@ public static class RuntimeController
         if (!_initialized)
             return;
 
-        Time.timeScale = _originalGameSpeed;
+        RestoreGameSpeed();
         Application.targetFrameRate = _originalTargetFrameRate;
         _initialized = false;
         _nextEnforcementTime = 0;
@@ -58,17 +60,32 @@ public static class RuntimeController
 
     private static void ApplySettings(bool logChanges)
     {
-        float gameSpeed = GameSpeed;
         int targetFrameRate = TargetFrameRate;
 
-        if (Math.Abs(Time.timeScale - gameSpeed) > 0.001f)
+        if (Config.GameSpeedEnabled?.Value == true)
         {
-            Time.timeScale = gameSpeed;
-            Logger.Info($"Game speed applied: {gameSpeed:0.##}x");
+            if (!_gameSpeedApplied)
+            {
+                _originalGameSpeed = Time.timeScale;
+                _gameSpeedApplied = true;
+            }
+
+            float gameSpeed = GameSpeed;
+            if (Math.Abs(Time.timeScale - gameSpeed) > 0.001f)
+            {
+                Time.timeScale = gameSpeed;
+                Logger.Info($"Game speed applied: {gameSpeed:0.##}x");
+            }
+            else if (logChanges)
+            {
+                Logger.Info($"Game speed: {gameSpeed:0.##}x");
+            }
         }
-        else if (logChanges)
+        else
         {
-            Logger.Info($"Game speed: {gameSpeed:0.##}x");
+            RestoreGameSpeed();
+            if (logChanges)
+                Logger.Info("Game speed override disabled");
         }
 
         if (Application.targetFrameRate != targetFrameRate)
@@ -80,6 +97,16 @@ public static class RuntimeController
         {
             Logger.Info($"Target frame rate: {targetFrameRate}");
         }
+    }
+
+    private static void RestoreGameSpeed()
+    {
+        if (!_gameSpeedApplied)
+            return;
+
+        Time.timeScale = _originalGameSpeed;
+        _gameSpeedApplied = false;
+        Logger.Info($"Game speed restored: {_originalGameSpeed:0.##}x");
     }
 
     private static float NormalizeGameSpeed(float value) =>

@@ -13,6 +13,8 @@ public static class Config
         $"{ModInfo.Name}.cfg"
     );
 
+    /// <summary>Gets the opt-in switch for overriding game speed.</summary>
+    public static MelonPreferences_Entry<bool> GameSpeedEnabled { get; private set; }
     public static MelonPreferences_Entry<float> GameSpeed { get; private set; }
     public static MelonPreferences_Entry<int> TargetFrameRate { get; private set; }
     public static MelonPreferences_Entry<float> ZoomRatio { get; private set; }
@@ -55,11 +57,17 @@ public static class Config
     private static void BindAllEntries()
     {
         var general = CreateCategory("General");
+        GameSpeedEnabled = CreateEntry(
+            general,
+            "GameSpeedEnabled",
+            false,
+            "是否修改游戏速度，默认关闭，修改后自动生效；关闭时恢复启用前的速度"
+        );
         GameSpeed = CreateEntry(
             general,
             "GameSpeed",
             1.0f,
-            "游戏速度倍率，允许范围 0.1 到 10，修改后自动生效"
+            "游戏速度倍率，允许范围 0.1 到 10，开启 GameSpeedEnabled 后生效"
         );
         TargetFrameRate = CreateEntry(
             general,

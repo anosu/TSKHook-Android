@@ -4,7 +4,7 @@ TSKHook 的 LemonLoader Android 移植版，为 Unity IL2CPP 客户端提供运�
 
 ## 功能
 
-- 固定游戏速度倍率并在游戏重置后自动恢复
+- 可选固定游戏速度倍率并在游戏重置后自动恢复（默认关闭）
 - 设置并保持目标帧率
 - 角色名、剧情标题和剧情文本翻译
 - 翻译下载、本地缓存和网络失败回退
@@ -21,6 +21,8 @@ TSKHook 的 LemonLoader Android 移植版，为 Unity IL2CPP 客户端提供运�
 ## 安装
 
 从 Releases 下载 `TSKHook-Android.zip`，解压到游戏的 `MelonLoader` base 目录并保留归档中的 `Mods` 和 `UserData` 路径。配置文件首次启动后生成在 `MelonLoader/UserData/TSKHook.cfg`。
+
+`[General]` 中的 `GameSpeedEnabled` 默认是 `false`，不干预游戏速度。设为 `true` 后按 `GameSpeed` 指定的倍率运行；两项修改均自动生效。运行中关闭开关会恢复启用前的速度，之后不再强制修改游戏速度。目标帧率设置不受此开关影响。
 
 ## 构建
 
