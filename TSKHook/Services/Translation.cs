@@ -278,8 +278,6 @@ public static class Translation
         Volatile.Write(ref _names, names);
         _namesLoaded = true;
         Logger.Info($"Character name translations loaded. Total: {names.Count}");
-        if (!_shutdown)
-            Toast.Success("翻译已加载", $"角色名称: {names.Count}");
     }
 
     private static async Task LoadNamesSafelyAsync(CancellationToken cancellationToken)
@@ -492,10 +490,6 @@ public static class Translation
                     if (!_shutdown)
                     {
                         Logger.Info($"TMP font loaded: {loader.Asset.name}");
-                        string message = _legacyFontLoader?.IsLoaded == true
-                            ? "Utage 与 TextMeshPro 中文字体已就绪"
-                            : "TextMeshPro 中文字体已就绪";
-                        Toast.Success("字体加载完成", message);
                     }
                 },
                 exception =>
