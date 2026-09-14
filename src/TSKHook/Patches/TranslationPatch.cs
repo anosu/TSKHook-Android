@@ -73,11 +73,7 @@ internal static class TranslationPatch
     [HarmonyPatch(typeof(UguiNovelText), "OnEnable")]
     private static void ApplyNovelFont(UguiNovelText __instance)
     {
-        if (
-            Config.TranslationEnabled.Value
-            && __instance != null
-            && Translation.LegacyFont != null
-        )
+        if (Config.TranslationEnabled.Value && __instance != null && Translation.LegacyFont != null)
             __instance.font = Translation.LegacyFont;
     }
 

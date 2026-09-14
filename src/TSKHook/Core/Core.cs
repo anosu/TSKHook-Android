@@ -5,7 +5,12 @@ using TSKHook.Services;
 using Utility.Diagnostics;
 using Utility.Notifications;
 
-[assembly: MelonInfo(typeof(TSKHook.Core), TSKHook.ModInfo.Name, TSKHook.ModInfo.Version, TSKHook.ModInfo.Author)]
+[assembly: MelonInfo(
+    typeof(TSKHook.Core),
+    TSKHook.ModInfo.Name,
+    TSKHook.ModInfo.Version,
+    TSKHook.ModInfo.Author
+)]
 [assembly: HarmonyDontPatchAll]
 
 namespace TSKHook;
@@ -27,11 +32,7 @@ public sealed class Core : MelonMod
             PatchManager.Initialize();
 
             Logger.Info($"{ModInfo.Name} loaded successfully");
-            Toast.Success(
-                ModInfo.Name,
-                $"Mod 加载成功，版本: {ModInfo.Version}",
-                duration: 7f
-            );
+            Toast.Success(ModInfo.Name, $"Mod 加载成功，版本: {ModInfo.Version}", duration: 7f);
         }
         catch (Exception exception)
         {
@@ -49,9 +50,10 @@ public sealed class Core : MelonMod
     {
         Logging.SetSink(entry =>
         {
-            string text = entry.Exception == null
-                ? $"[{entry.Category}] {entry.Message}"
-                : $"[{entry.Category}] {entry.Message}\n{entry.Exception}";
+            string text =
+                entry.Exception == null
+                    ? $"[{entry.Category}] {entry.Message}"
+                    : $"[{entry.Category}] {entry.Message}\n{entry.Exception}";
 
             switch (entry.Level)
             {

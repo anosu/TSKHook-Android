@@ -1,4 +1,4 @@
 <Solution>
     <Project Path="src/TSKHook/TSKHook.csproj" />
-    <Project Path="shared/Utility/src/Utility/Utility.csproj" />
+    <Project Path="../Utility/src/Utility/Utility.csproj" />
 </Solution>

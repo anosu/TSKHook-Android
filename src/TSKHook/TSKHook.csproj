@@ -1,0 +1,83 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <GenerateModVersion>true</GenerateModVersion>
+        <TargetFramework>net6.0</TargetFramework>
+        <AssemblyName>TSKHook</AssemblyName>
+        <Product>TSKHook</Product>
+        <Version>1.1.7</Version>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <LangVersion>latest</LangVersion>
+        <Nullable>disable</Nullable>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <RootNamespace>TSKHook</RootNamespace>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+        <DebugType>none</DebugType>
+        <DependencyRoot Condition="'$(DependencyRoot)' == ''"
+            >$(ModRepositoryRoot)dependencies</DependencyRoot>
+        <MelonLoaderReferenceDirectory Condition="'$(MelonLoaderReferenceDirectory)' == ''"
+            >$(DependencyRoot)/melonloader/net6</MelonLoaderReferenceDirectory>
+        <GameInteropReferenceDirectory Condition="'$(GameInteropReferenceDirectory)' == ''"
+            >$(DependencyRoot)/interop/assemblies</GameInteropReferenceDirectory>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Reference
+            Include="0Harmony"
+            HintPath="$(MelonLoaderReferenceDirectory)/0Harmony.dll"
+            Private="false"
+        />
+        <Reference
+            Include="Il2CppInterop.Runtime"
+            HintPath="$(MelonLoaderReferenceDirectory)/Il2CppInterop.Runtime.dll"
+            Private="false"
+        />
+        <Reference
+            Include="MelonLoader"
+            HintPath="$(MelonLoaderReferenceDirectory)/MelonLoader.dll"
+            Private="false"
+        />
+
+        <Reference
+            Include="Assembly-CSharp"
+            HintPath="$(GameInteropReferenceDirectory)/Assembly-CSharp.dll"
+            Private="false"
+        />
+        <Reference
+            Include="Il2Cppmscorlib"
+            HintPath="$(GameInteropReferenceDirectory)/Il2Cppmscorlib.dll"
+            Private="false"
+        />
+        <Reference
+            Include="Unity.TextMeshPro"
+            HintPath="$(GameInteropReferenceDirectory)/Unity.TextMeshPro.dll"
+            Private="false"
+        />
+        <Reference
+            Include="UnityEngine.AssetBundleModule"
+            HintPath="$(GameInteropReferenceDirectory)/UnityEngine.AssetBundleModule.dll"
+            Private="false"
+        />
+        <Reference
+            Include="UnityEngine.CoreModule"
+            HintPath="$(GameInteropReferenceDirectory)/UnityEngine.CoreModule.dll"
+            Private="false"
+        />
+        <Reference
+            Include="UnityEngine.IMGUIModule"
+            HintPath="$(GameInteropReferenceDirectory)/UnityEngine.IMGUIModule.dll"
+            Private="false"
+        />
+        <Reference
+            Include="UnityEngine.TextRenderingModule"
+            HintPath="$(GameInteropReferenceDirectory)/UnityEngine.TextRenderingModule.dll"
+            Private="false"
+        />
+        <Reference
+            Include="UnityEngine.UI"
+            HintPath="$(GameInteropReferenceDirectory)/UnityEngine.UI.dll"
+            Private="false"
+        />
+    </ItemGroup>
+    <Import Project="$(ModRepositoryRoot)build/SharedDependencies.props" />
+</Project>

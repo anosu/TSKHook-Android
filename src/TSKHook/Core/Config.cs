@@ -75,12 +75,7 @@ public static class Config
             60,
             "目标帧率，允许范围 30 到 240，修改后自动生效"
         );
-        ZoomRatio = CreateEntry(
-            general,
-            "ZoomRatio",
-            1.0f,
-            "图鉴角色缩放倍率，允许范围 0.1 到 5"
-        );
+        ZoomRatio = CreateEntry(general, "ZoomRatio", 1.0f, "图鉴角色缩放倍率，允许范围 0.1 到 5");
 
         var translation = CreateCategory("Translation");
         TranslationEnabled = CreateEntry(

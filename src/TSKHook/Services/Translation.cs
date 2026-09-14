@@ -23,7 +23,8 @@ public static class Translation
     private const int PooledConnectionLifetimeMinutes = 5;
     private const int PooledConnectionIdleTimeoutMinutes = 2;
 
-    private static readonly ConcurrentDictionary<string, Dictionary<string, string>> Chapters = new();
+    private static readonly ConcurrentDictionary<string, Dictionary<string, string>> Chapters =
+        new();
     private static readonly ConcurrentDictionary<string, Lazy<Task>> PendingChapterLoads = new();
     private static readonly ConcurrentDictionary<string, SemaphoreSlim> CacheLocks = new();
     private static readonly object NamesLoadLock = new();
@@ -128,7 +129,8 @@ public static class Translation
         {
             await Task.WhenAll(pendingLoad.Value, EnsureNamesLoadedAsync()).ConfigureAwait(false);
         }
-        catch (OperationCanceledException) when (cancellationTokenSource.IsCancellationRequested) { }
+        catch (OperationCanceledException) when (cancellationTokenSource.IsCancellationRequested)
+        { }
         catch (Exception exception)
         {
             Logger.Error($"Chapter translation load failed [{normalizedChapterId}]: {exception}");
@@ -172,10 +174,7 @@ public static class Translation
         foreach (char character in candidate)
         {
             if (
-                !(
-                    (character >= 'a' && character <= 'z')
-                    || (character >= '0' && character <= '9')
-                )
+                !((character >= 'a' && character <= 'z') || (character >= '0' && character <= '9'))
                 && character != '-'
                 && character != '_'
             )
@@ -357,8 +356,8 @@ public static class Translation
                 .ConfigureAwait(false);
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content
-                    .ReadFromJsonAsync<T>(cancellationToken: cancellationToken)
+                return await response
+                    .Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken)
                     .ConfigureAwait(false);
             }
 
@@ -513,10 +512,7 @@ public static class Translation
             PooledConnectionLifetime = TimeSpan.FromMinutes(PooledConnectionLifetimeMinutes),
             PooledConnectionIdleTimeout = TimeSpan.FromMinutes(PooledConnectionIdleTimeoutMinutes),
         };
-        var client = new HttpClient(handler)
-        {
-            Timeout = TimeSpan.FromSeconds(HttpTimeoutSeconds),
-        };
+        var client = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(HttpTimeoutSeconds) };
         client.DefaultRequestHeaders.UserAgent.ParseAdd($"{ModInfo.Name}/{ModInfo.Version}");
         return client;
     }
@@ -535,7 +531,9 @@ public static class Translation
         if (File.Exists(userDataPath))
             return userDataPath;
 
-        string legacyModsPath = Path.GetFullPath(Path.Combine(MelonEnvironment.ModsDirectory, path));
+        string legacyModsPath = Path.GetFullPath(
+            Path.Combine(MelonEnvironment.ModsDirectory, path)
+        );
         if (File.Exists(legacyModsPath))
         {
             Logger.Info($"Using legacy Mods font bundle: {legacyModsPath}");
@@ -562,7 +560,10 @@ public static class Translation
             || language.Contains('/')
             || language.Contains('\\')
         )
-            throw new ArgumentException("Configured translation language is invalid", nameof(language));
+            throw new ArgumentException(
+                "Configured translation language is invalid",
+                nameof(language)
+            );
 
         return language.Trim();
     }

@@ -16,9 +16,8 @@ public static class RuntimeController
 
     public static float GameSpeed => NormalizeGameSpeed(Config.GameSpeed?.Value ?? 1.0f);
 
-    public static int TargetFrameRate => NormalizeTargetFrameRate(
-        Config.TargetFrameRate?.Value ?? 60
-    );
+    public static int TargetFrameRate =>
+        NormalizeTargetFrameRate(Config.TargetFrameRate?.Value ?? 60);
 
     public static float ZoomRatio => NormalizeZoomRatio(Config.ZoomRatio?.Value ?? 1.0f);
 
