@@ -1,4 +1,0 @@
-<Solution>
-    <Project Path="src/TSKHook/TSKHook.csproj" />
-    <Project Path="../Utility/src/Utility/Utility.csproj" />
-</Solution>
