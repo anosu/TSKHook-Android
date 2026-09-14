@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Il2CppTMPro;
@@ -13,6 +11,7 @@ using MelonLoader;
 using MelonLoader.Utils;
 using UnityEngine;
 using Utility.Assets;
+using Utility.Caching;
 using Utility.Notifications;
 
 namespace TSKHook.Services;
@@ -26,7 +25,7 @@ public static class Translation
     private static readonly ConcurrentDictionary<string, Dictionary<string, string>> Chapters =
         new();
     private static readonly ConcurrentDictionary<string, Lazy<Task>> PendingChapterLoads = new();
-    private static readonly ConcurrentDictionary<string, SemaphoreSlim> CacheLocks = new();
+    private static JsonResourceCache _resources;
     private static readonly object NamesLoadLock = new();
 
     private static Dictionary<string, string> _names = new();
@@ -53,6 +52,16 @@ public static class Translation
         _language = ValidateLanguage(Config.TranslationLanguage.Value);
         _cacheDirectory = ResolveUserDataPath(Config.TranslationCacheDirectory.Value);
         _client = CreateHttpClient();
+        _resources = new JsonResourceCache(
+            _client,
+            message => Logger.Info(message),
+            message => Logger.Warn(message),
+            downloadError: exception =>
+            {
+                if (!_shutdown)
+                    Toast.Error("网络错误", exception.Message);
+            }
+        );
         _shutdownTokenSource = new CancellationTokenSource();
 
         string fontBundlePath = ResolveFontBundlePath(Config.FontBundlePath.Value);
@@ -93,7 +102,7 @@ public static class Translation
 
         PendingChapterLoads.Clear();
         Chapters.Clear();
-        CacheLocks.Clear();
+        _resources = null;
 
         lock (NamesLoadLock)
         {
@@ -305,127 +314,20 @@ public static class Translation
             _cacheDirectory,
             cacheRelativePath.Replace('/', Path.DirectorySeparatorChar)
         );
-        var cacheLock = CacheLocks.GetOrAdd(cachePath, _ => new SemaphoreSlim(1, 1));
-        await cacheLock.WaitAsync(cancellationToken).ConfigureAwait(false);
-        try
-        {
-            T cached = ReadCache<T>(cachePath);
-            if (Config.TranslationPreferLocalFiles.Value && cached != null)
-            {
-                Logger.Info($"Preferred local translation: {cacheRelativePath}");
-                return cached;
-            }
-
-            T downloaded = await DownloadAsync<T>(remoteRelativePath, cancellationToken)
-                .ConfigureAwait(false);
-            if (downloaded != null)
-            {
-                SaveCache(cachePath, downloaded);
-                return downloaded;
-            }
-
-            if (cached != null)
-            {
-                Logger.Warn($"Using stale translation cache: {cacheRelativePath}");
-                return cached;
-            }
-
+        var resources = _resources;
+        if (resources == null)
             return null;
-        }
-        finally
-        {
-            cacheLock.Release();
-        }
-    }
-
-    private static async Task<T> DownloadAsync<T>(
-        string relativePath,
-        CancellationToken cancellationToken
-    )
-        where T : class
-    {
-        string url = $"{_cdn}/{relativePath}";
-        var client = _client;
-        if (client == null)
-            return null;
-
-        try
-        {
-            using var response = await client
-                .GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
-                .ConfigureAwait(false);
-            if (response.IsSuccessStatusCode)
-            {
-                return await response
-                    .Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken)
-                    .ConfigureAwait(false);
-            }
-
-            Logger.Warn($"GET {url} returned {(int)response.StatusCode} {response.StatusCode}");
-        }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-        {
-            return null;
-        }
-        catch (TaskCanceledException)
-        {
-            Logger.Warn($"GET timed out: {url}");
-        }
-        catch (Exception exception)
-        {
-            if (_shutdown)
-                return null;
-
-            Logger.Error($"GET failed [{url}]: {exception}");
-            Toast.Error("网络错误", exception.Message);
-        }
-
-        return null;
-    }
-
-    private static T ReadCache<T>(string path)
-        where T : class
-    {
-        if (!File.Exists(path))
-            return null;
-
-        try
-        {
-            return JsonSerializer.Deserialize<T>(File.ReadAllText(path));
-        }
-        catch (Exception exception)
-        {
-            Logger.Warn($"Failed to read translation cache [{path}]: {exception.Message}");
-            return null;
-        }
-    }
-
-    private static void SaveCache<T>(string path, T value)
-        where T : class
-    {
-        string temporaryPath = path + ".tmp";
-        try
-        {
-            string directory = Path.GetDirectoryName(path);
-            if (!string.IsNullOrEmpty(directory))
-                Directory.CreateDirectory(directory);
-
-            File.WriteAllText(temporaryPath, JsonSerializer.Serialize(value));
-            File.Move(temporaryPath, path, true);
-        }
-        catch (Exception exception)
-        {
-            Logger.Warn($"Failed to write translation cache [{path}]: {exception.Message}");
-        }
-        finally
-        {
-            try
-            {
-                if (File.Exists(temporaryPath))
-                    File.Delete(temporaryPath);
-            }
-            catch { }
-        }
+        return await resources
+            .RefreshAsync<T>(
+                cacheRelativePath,
+                cachePath,
+                $"{_cdn}/{remoteRelativePath}",
+                Config.TranslationPreferLocalFiles.Value
+                    ? JsonCachePolicy.PreferLocal
+                    : JsonCachePolicy.Refresh,
+                cancellationToken: cancellationToken
+            )
+            .ConfigureAwait(false);
     }
 
     private static void StartFontLoad()
