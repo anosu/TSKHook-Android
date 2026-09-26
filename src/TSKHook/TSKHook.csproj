@@ -1,58 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <Import Project="$(ModRepositoryRoot)shared/ModEngineering/build/Android.props" />
     <PropertyGroup>
-        <AssemblyName>TSKHook</AssemblyName>
-        <Product>TSKHook</Product>
         <Version>1.1.7</Version>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Nullable>disable</Nullable>
-        <ImplicitUsings>disable</ImplicitUsings>
-        <RootNamespace>TSKHook</RootNamespace>
         <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     </PropertyGroup>
 
-    <ItemGroup>
-        <Reference
-            Include="Assembly-CSharp"
-            HintPath="$(GameInteropReferenceDirectory)/Assembly-CSharp.dll"
-            Private="false"
-        />
-        <Reference
-            Include="Il2Cppmscorlib"
-            HintPath="$(GameInteropReferenceDirectory)/Il2Cppmscorlib.dll"
-            Private="false"
-        />
-        <Reference
-            Include="Unity.TextMeshPro"
-            HintPath="$(GameInteropReferenceDirectory)/Unity.TextMeshPro.dll"
-            Private="false"
-        />
-        <Reference
-            Include="UnityEngine.AssetBundleModule"
-            HintPath="$(GameInteropReferenceDirectory)/UnityEngine.AssetBundleModule.dll"
-            Private="false"
-        />
-        <Reference
-            Include="UnityEngine.CoreModule"
-            HintPath="$(GameInteropReferenceDirectory)/UnityEngine.CoreModule.dll"
-            Private="false"
-        />
-        <Reference
-            Include="UnityEngine.IMGUIModule"
-            HintPath="$(GameInteropReferenceDirectory)/UnityEngine.IMGUIModule.dll"
-            Private="false"
-        />
-        <Reference
-            Include="UnityEngine.TextRenderingModule"
-            HintPath="$(GameInteropReferenceDirectory)/UnityEngine.TextRenderingModule.dll"
-            Private="false"
-        />
-        <Reference
-            Include="UnityEngine.UI"
-            HintPath="$(GameInteropReferenceDirectory)/UnityEngine.UI.dll"
-            Private="false"
-        />
-    </ItemGroup>
     <Import Project="$(ModRepositoryRoot)shared/ModEngineering/build/SharedDependencies.props" />
     <Target Name="CollectExtraPackageFiles" BeforeTargets="GetModPackageFiles">
         <ItemGroup>
