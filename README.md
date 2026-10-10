@@ -1,5 +1,7 @@
 # TSKHook Android
 
+本版本针对 [LemonLoader v0.7.4-android.3](https://github.com/LemonLoaderX/LemonLoader/releases/tag/v0.7.4-android.3) 构建，Mod 目标为 `net10.0`，需要 .NET 10 SDK；加载器运行时为 .NET 11，历史 `net6` 目录仍作为引用和安装路径。Loader 编译 DLL 来自正式发行包，不随 Mod ZIP 部署。使用 Patcher 安装该加载器时需 2.1.0 或更新版；从原始游戏 APK 准备新 payload，保留包名、签名及用户数据，勿混用旧运行时。游戏 Interop 保持各项目现有导出，运行验证需使用对应游戏版本。
+
 TSKHook 的 LemonLoader Android 移植版，为 Unity IL2CPP 客户端提供运行参数控制和繁体中文本地化。
 
 ## 功能
